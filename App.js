@@ -6,8 +6,9 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
+  AppState,
   SafeAreaView,
   StyleSheet,
   ScrollView,
@@ -25,6 +26,35 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const App: () => React$Node = () => {
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  const handleAppStateChange = nextAppState => {
+    console.log(
+      'handleAppStateChange: appState changing from ',
+      appState,
+      ' to ',
+      nextAppState,
+    ); // Logged as changing from 'active' to 'active' when the app comes to the foreground
+
+    if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!'); // Does not get logged
+    }
+
+    if (appState.match(/inactive|active/) && nextAppState === 'background') {
+      console.log('App has gone to the background!'); // Logged as expected
+    }
+
+    setAppState(nextAppState);
+  };
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
