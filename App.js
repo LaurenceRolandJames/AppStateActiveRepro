@@ -48,12 +48,14 @@ const App: () => React$Node = () => {
   };
 
   useEffect(() => {
+    console.log('addEventListener');
     AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
+      console.log('removeEventListener');
       AppState.removeEventListener('change', handleAppStateChange);
     };
-  }, []);
+  });
 
   return (
     <>
